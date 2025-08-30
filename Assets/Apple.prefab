@@ -361,6 +361,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -166.75
       objectReference: {fileID: 0}
+    - target: {fileID: 1904429341452958946, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2205386008459285360, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
       propertyPath: m_AnchorMax.y
       value: 1
@@ -372,6 +376,10 @@ PrefabInstance:
     - target: {fileID: 2205386008459285360, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
       propertyPath: m_AnchoredPosition.x
       value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3688623276276536643, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
+      propertyPath: m_Text
+      value: Apple
       objectReference: {fileID: 0}
     - target: {fileID: 3752284469917925382, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
       propertyPath: m_AnchorMax.y
@@ -420,6 +428,14 @@ PrefabInstance:
     - target: {fileID: 4705125397636140693, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -100.75
+      objectReference: {fileID: 0}
+    - target: {fileID: 6660973157109385358, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7120596330091915229, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
+      propertyPath: m_Text
+      value: Apfel
       objectReference: {fileID: 0}
     - target: {fileID: 9015032430957317065, guid: badcfe9bea4836d42835d256ac78e6a5, type: 3}
       propertyPath: m_Pivot.x
