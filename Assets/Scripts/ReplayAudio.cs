@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿/*using UnityEngine;
 
 public class MicController : MonoBehaviour
 {
@@ -77,6 +77,78 @@ public class MicController : MonoBehaviour
         else if (isRecording)
         {
             Debug.LogWarning("Cannot play while recording is in progress.");
+        }
+    }
+}*/
+
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+
+public class MicController : MonoBehaviour
+{
+    public AudioSource playbackSource;
+    public SimpleBackendConnector backendConnector;
+
+    [Header("UI References")]
+    public Button recordButton;
+    public TextMeshProUGUI buttonLabel;
+    public TextMeshProUGUI transcriptionText; // <- NEW
+
+    private bool isRecording = false;
+    private AudioClip recordedClip;
+    private string microphoneDevice;
+    private int maxRecordingLength = 300; // 5 minutes
+
+    void Start()
+    {
+        if (Microphone.devices.Length > 0)
+        {
+            microphoneDevice = Microphone.devices[0];
+        }
+        else
+        {
+            Debug.LogError("No microphone found!");
+        }
+
+        if (backendConnector == null)
+        {
+            Debug.LogError("SimpleBackendConnector is not assigned in the Inspector!");
+        }
+
+        if (recordButton != null)
+            recordButton.onClick.AddListener(ToggleRecording);
+    }
+
+    public void ToggleRecording()
+    {
+        if (!isRecording)
+        {
+            isRecording = true;
+            buttonLabel.text = "Stop 🎙️";
+            Debug.Log("Recording started...");
+            recordedClip = Microphone.Start(microphoneDevice, false, maxRecordingLength, 16000);
+        }
+        else
+        {
+            isRecording = false;
+            buttonLabel.text = "Start 🎙️";
+            Debug.Log("Recording stopped. Trimming and sending to backend...");
+
+            int position = Microphone.GetPosition(microphoneDevice);
+            Microphone.End(microphoneDevice);
+
+            float[] soundData = new float[position];
+            recordedClip.GetData(soundData, 0);
+
+            AudioClip trimmedClip = AudioClip.Create("TrimmedSound", position, 1, 16000, false);
+            trimmedClip.SetData(soundData, 0);
+            recordedClip = trimmedClip;
+
+            if (trimmedClip != null)
+            {
+                backendConnector.SendAudioToBackend(trimmedClip, transcriptionText); // Pass text UI ref
+            }
         }
     }
 }

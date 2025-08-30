@@ -1,9 +1,10 @@
+﻿using System;
+using System.Collections;
+using System.IO;
+using System.Text;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
-using System;
-using System.Collections;
-using System.Text;
-using System.IO;
 
 // --- Minimal class for sending the request ---
 [System.Serializable]
@@ -34,23 +35,88 @@ public class SimpleBackendConnector : MonoBehaviour
     /// <summary>
     /// Public method to start the process of sending audio to the backend.
     /// </summary>
-    public void SendAudioToBackend(AudioClip clip)
+    /*    public void SendAudioToBackend(AudioClip clip)
+        {
+            StartCoroutine(SendRequestCoroutine(clip));
+        }
+
+        private IEnumerator SendRequestCoroutine(AudioClip clip)
+        {
+            Debug.Log("Converting audio to WAV format...");
+            byte[] wavData = WavUtility.FromAudioClip(clip);
+            string base64Audio = Convert.ToBase64String(wavData);
+
+            // Create the simple JSON payload
+            MinimalRequest payload = new MinimalRequest
+            {
+                audioData = base64Audio,
+                inputLanguage = "en", // Hardcoded for simplicity
+                targetLanguage = "de" // Hardcoded for simplicity
+            };
+            string jsonPayload = JsonUtility.ToJson(payload);
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
+
+            using (UnityWebRequest request = new UnityWebRequest(backendUrl, "POST"))
+            {
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.timeout = 25; // 25-second timeout
+
+                Debug.Log("Sending audio data to backend...");
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log("Successfully received response from backend.");
+                    MinimalResponse response = JsonUtility.FromJson<MinimalResponse>(request.downloadHandler.text);
+
+                    if (!string.IsNullOrEmpty(response.audioReply))
+                    {
+                        // Convert the base64 audio reply back to an AudioClip and play it
+                        byte[] audioBytes = Convert.FromBase64String(response.audioReply);
+                        AudioClip replyClip = WavUtility.ToAudioClip(audioBytes);
+
+                        if (replyClip != null && replyAudioSource != null)
+                        {
+                            replyAudioSource.clip = replyClip;
+                            replyAudioSource.Play();
+                            Debug.Log("Playing AI audio reply.");
+                        }
+                    }
+                }
+                else
+                {
+                    Debug.LogError($"Error connecting to backend: {request.error}");
+                }
+            }
+        }
+
+    */
+    public void SendAudioToBackend(AudioClip clip, TextMeshProUGUI transcriptionUI)
     {
-        StartCoroutine(SendRequestCoroutine(clip));
+        StartCoroutine(SendRequestCoroutine(clip, transcriptionUI));
     }
 
-    private IEnumerator SendRequestCoroutine(AudioClip clip)
+
+    [System.Serializable]
+    public class BackendFullResponse
+    {
+        public string reply;      // Whisper transcription / AI reply text
+        public string audioReply; // AI’s spoken reply
+    }
+
+    private IEnumerator SendRequestCoroutine(AudioClip clip, TextMeshProUGUI transcriptionUI)
     {
         Debug.Log("Converting audio to WAV format...");
         byte[] wavData = WavUtility.FromAudioClip(clip);
         string base64Audio = Convert.ToBase64String(wavData);
 
-        // Create the simple JSON payload
         MinimalRequest payload = new MinimalRequest
         {
             audioData = base64Audio,
-            inputLanguage = "en", // Hardcoded for simplicity
-            targetLanguage = "de" // Hardcoded for simplicity
+            inputLanguage = "en",
+            targetLanguage = "hi"
         };
         string jsonPayload = JsonUtility.ToJson(payload);
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
@@ -60,22 +126,27 @@ public class SimpleBackendConnector : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            request.timeout = 25; // 25-second timeout
+            request.timeout = 25;
 
             Debug.Log("Sending audio data to backend...");
             yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log("Successfully received response from backend.");
-                MinimalResponse response = JsonUtility.FromJson<MinimalResponse>(request.downloadHandler.text);
+                Debug.Log("Response received from backend: " + request.downloadHandler.text);
+                // Parse into your extended response class
+                BackendFullResponse response = JsonUtility.FromJson<BackendFullResponse>(request.downloadHandler.text);
+
+                if (transcriptionUI != null && !string.IsNullOrEmpty(response.reply))
+                {
+                    transcriptionUI.text = response.reply; // show Whisper response text
+                }
 
                 if (!string.IsNullOrEmpty(response.audioReply))
                 {
-                    // Convert the base64 audio reply back to an AudioClip and play it
                     byte[] audioBytes = Convert.FromBase64String(response.audioReply);
                     AudioClip replyClip = WavUtility.ToAudioClip(audioBytes);
-                    
+
                     if (replyClip != null && replyAudioSource != null)
                     {
                         replyAudioSource.clip = replyClip;
@@ -87,6 +158,8 @@ public class SimpleBackendConnector : MonoBehaviour
             else
             {
                 Debug.LogError($"Error connecting to backend: {request.error}");
+                if (transcriptionUI != null)
+                    transcriptionUI.text = "⚠️ Backend error: " + request.error;
             }
         }
     }
