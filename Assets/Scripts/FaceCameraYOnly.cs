@@ -11,7 +11,7 @@ public class FaceCameraYOnly : MonoBehaviour
 
     void LateUpdate()
     {
-        Vector3 targetPos = transform.position - cam.forward;
+        Vector3 targetPos = transform.position + cam.forward;
         targetPos.y = transform.position.y; // lock Y-axis
         transform.LookAt(targetPos);
     }

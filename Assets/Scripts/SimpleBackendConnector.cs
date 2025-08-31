@@ -3,8 +3,10 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
+
 
 // --- Minimal class for sending the request ---
 [System.Serializable]
@@ -13,13 +15,15 @@ public class MinimalRequest
     public string audioData;
     public string inputLanguage;
     public string targetLanguage;
+    public string contextTag;
 }
 
 // --- Minimal class for receiving the response ---
 [System.Serializable]
-public class MinimalResponse
+public class BackendResponse
 {
-    public string audioReply; // We only care about the audio reply for this minimal version
+    public string reply; // We only care about the audio reply for this minimal version
+    public string audioReply;
 }
 
 public class SimpleBackendConnector : MonoBehaviour
@@ -28,9 +32,66 @@ public class SimpleBackendConnector : MonoBehaviour
     [Tooltip("The full URL of your backend endpoint")]
     public string backendUrl = "https://d35d111888cc.ngrok-free.app/api/converse";
     
+    [Header("Language Settings")]
+    [Tooltip("The language the user is speaking (e.g., 'en', 'es', 'hi')")]
+    public string inputLanguage = "en";
+    [Tooltip("The language the user wants to learn (e.g., 'de', 'fr', 'ja')")]
+    public string targetLanguage = "hi";
+    
     [Header("Components")]
     [Tooltip("AudioSource to play the AI's spoken response")]
     public AudioSource replyAudioSource;
+    public TextMeshProUGUI contextlog;
+    private string context = "general";
+    
+    private void UpdateText(string name)
+    {
+        if (contextlog != null)
+        {
+            contextlog.text = $"Selected: {name}";
+            context = name;
+            Debug.Log($"UI updated to show: {name}");
+        }
+    }
+
+    // --- Wrapper Functions ---
+    // Create one simple, public function for each vegetable you want to display.
+    // These are the functions you will call from the grab event.
+
+    public void ShowTomatoText()
+    {
+        UpdateText("Tomato");
+    }
+
+    public void ShowAppleText()
+    {
+        UpdateText("Apple");
+    }
+
+    public void ShowOrangeText()
+    {
+        UpdateText("Orange");
+    }
+    
+    public void ShowPumpkinText()
+    {
+        UpdateText("Pumpkin");
+    }
+    
+    public void ShowWatermelonText()
+    {
+        UpdateText("Watermelon");
+    }
+
+    public void ClearText()
+    {
+        UpdateText(""); // Clears the text
+    }
+
+    // Your original method that accepts a string
+
+    // --- NEW: The Reusable Wrapper Method ---
+    // This function takes no arguments, so it's compatible with the XRI event.
 
     /// <summary>
     /// Public method to start the process of sending audio to the backend.
@@ -93,6 +154,7 @@ public class SimpleBackendConnector : MonoBehaviour
         }
 
     */
+    
     public void SendAudioToBackend(AudioClip clip, TextMeshProUGUI transcriptionUI)
     {
         StartCoroutine(SendRequestCoroutine(clip, transcriptionUI));
@@ -115,8 +177,9 @@ public class SimpleBackendConnector : MonoBehaviour
         MinimalRequest payload = new MinimalRequest
         {
             audioData = base64Audio,
-            inputLanguage = "en",
-            targetLanguage = "hi"
+            inputLanguage = this.inputLanguage,
+            targetLanguage = this.targetLanguage,
+            contextTag = context
         };
         string jsonPayload = JsonUtility.ToJson(payload);
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
