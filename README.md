@@ -6,7 +6,7 @@ This project is built on the **OpenXR** standard, ensuring a robust and scalable
 
 ---
 
-## 🌍 Scenario
+## Scenario
 
 The initial scene places the user in a **German vegetable market** where they can:
 - Learn vocabulary  
@@ -15,7 +15,12 @@ The initial scene places the user in a **German vegetable market** where they ca
 
 ---
 
-## ✨ Features
+## Screenshot
+![Untitled](https://github.com/user-attachments/assets/7ca49ff7-3923-4b37-bb47-7762e12e0261)
+
+---
+
+## Features
 
 - **Immersive VR Environment**  
   A fully interactive vegetable market scene built in Unity for OpenXR.
@@ -37,7 +42,7 @@ The initial scene places the user in a **German vegetable market** where they ca
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 The project is split into two main components:  
 1. **Unity Client (Frontend)**  
@@ -52,7 +57,7 @@ The project is split into two main components:
 
 ---
 
-## 🔄 API & Data Flow
+## API & Data Flow
 
 The communication between the Unity client and the Node.js backend is a **stateless request-response cycle**.
 
@@ -71,7 +76,7 @@ The communication between the Unity client and the Node.js backend is a **statel
 
 ---
 
-## 📦 Example Payloads
+## Example Payloads
 
 ### Request (Unity → Backend)
 ```json
@@ -94,7 +99,7 @@ The communication between the Unity client and the Node.js backend is a **statel
 
 ---
 
-## ⚙️ Prerequisites
+## Prerequisites
 
 * [Unity Hub](https://unity.com/download) with **Unity 6 LTS** (or newer)
 * OpenXR Plugin
@@ -105,7 +110,7 @@ The communication between the Unity client and the Node.js backend is a **statel
 
 ---
 
-## 🖥 Backend Setup
+## Backend Setup
 
 1. Navigate to the backend folder:
 
@@ -141,7 +146,7 @@ The communication between the Unity client and the Node.js backend is a **statel
 
 ---
 
-## 🎮 Unity Client Setup
+## Unity Client Setup
 
 1. **Configure Backend Connector**
 
@@ -166,7 +171,7 @@ The communication between the Unity client and the Node.js backend is a **statel
 
 ---
 
-## 🚀 How to Use
+## How to Use
 
 1. Start the backend server and `ngrok`.
 2. Enter Play Mode in Unity (or build & run on Quest).
@@ -174,5 +179,10 @@ The communication between the Unity client and the Node.js backend is a **statel
 4. Pick up a tagged object (e.g., a potato) before speaking → AI gives **context-aware replies**.
 
 ---
+
+## Team and Contact
+
+- Ashwani Kumar Moudgil (ashwanihabri@gmail.com)
+- Raghav Sharma (raghaaav5@gmail.com)
 
 
